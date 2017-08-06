@@ -21,6 +21,7 @@ $_['entry_image_compare'] = 'Compare Image Size (W x H)';
 $_['entry_image_wishlist'] = 'Wish List Image Size (W x H)';
 $_['entry_image_cart'] = 'Cart Image Size (W x H)';
 $_['entry_image_location'] = 'Store Image Size (W x H)';
+$_['entry_image_mid'] = 'Product Image Middle';
 $_['entry_width'] = 'Width';
 $_['entry_height'] = 'Height';
 $_['help_directory'] = 'This field is only to enable older themes to be compatible with the new theme system. You can set the theme directory to use on the image size settings defined here.';
@@ -41,4 +42,3 @@ $_['error_image_wishlist'] = 'Wish List Image Size dimensions required!';
 $_['error_image_cart'] = 'Cart Image Size dimensions required!';
 $_['error_image_location'] = 'Store Image Size dimensions required!';
 $_['text_extension'] = 'Extension';
-?>

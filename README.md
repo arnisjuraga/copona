@@ -1,42 +1,54 @@
 # Copona
 
-Copona is open source PHP digital e-commerce platform inspired and based on Opecnart http://www.opencart.com.
+Copona is open source PHP digital e-commerce platform inspired and based on Opencart http://www.opencart.com.
+
+Good alternative to Opencart, Woocommerce and Prestashop. Read our Wiki for more information on changes and advantages over competitors.
 
 Copona is in DEV mode so, please, use it and test it. Post issues, bugs or **feature requests** here https://github.com/Copona/copona/issues. Our team will be happy to assist!
 
 
 ## Requirements
-* MySQL 5.3
-* PHP 5.4
+* MySQL >= 5.3
+* PHP >= 5.6
 * Composer [https://getcomposer.org/](https://getcomposer.org/)
 
-## Installation with Git (recommended)
-* Install WEB server Apache, IIS, etc.
-  * If You have problem, please, post the issues here: https://github.com/Copona/copona/issues 
-* Install PHP and MySQL 
-* Install Composer
-* install git
- * Ubuntu, Debian
-   * `apt-get install git`
-   * Prerequisites
-     * `apt-get install php-curl`
-     * `apt-get install php-zip`
- * CentOS, RedHat
-   * `yum install git`
- * Windows
-   * go to https://git-scm.com/downloads
-    * download Git for Windows
-    * execue the installation
-    * if you are not sure: choose `next > next > next > ... > next > install`
-* open WEB directory where do you want to have Copona
-* execute commands: 
- * `git clone https://github.com/Copona/copona.git .`
- * `git config user.name "Your Name"`
- * `git config user.email youremail@yourdomain.org`
- * `git config core.fileMode false`
-* From the command prompt, execute:
- * `composer update`
+## Get started
+`composer create-project copona/copona --stability=dev`
+
+`cd copona && php copona install`
+
+## Installation
+* Getting project files
+    * With Git (recommended)
+        * install git [guide](http://rogerdudler.github.io/git-guide)
+		* install composer [guide](https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies)
+        * execute commands: 
+		* cd to webroot, like:
+		    * `cd /var/www/public_html`
+        * `git clone https://github.com/Copona/copona.git .`
+        * `git config user.name "Your Name"`
+        * `git config user.email youremail@yourdomain.org`
+        * `git config core.fileMode false`
+		* `composer install`
+		* open installation `http://domain/install`
+    * Download files
+        * [Click here to download master branch](https://github.com/copona/copona/archive/master.zip)
+* Prepared environment
+    * With Docker
+        * Install [Docker](https://docs.docker.com/engine/installation/) and [Docker Compose](https://docs.docker.com/compose/install/)
+        * Duplicate `.env.example` to `.env` and configure file
+        * Execute `docker-compose up -d`
+        * From the command prompt, acess bash `docker-compose exec web bash` and execute:
+            * Execute composer `cd /app && composer install`
+            * Execute migration `cd /app && php vendor/bin/phinx migrate`
+    * Manual install
+        * Install WEB server Apache, IIS, etc.
+        * Install PHP and MySQL 
+        * Install Composer [https://getcomposer.org/](https://getcomposer.org/)
+        * From the command prompt, execute:
+            * Execute composer `composer install`
 * navigate to WEB address `http://domain-OR-IPaddress/` or `http://domain-OR-IPaddress/subfolder-where-you-cloned`
+	* Execute migration `php vendor/bin/phinx migrate`
 * If all the requirements have been met, fill the form and enjoy!
 
 ## Update

@@ -3,7 +3,7 @@ class ControllerExtensionShippingPickup extends Controller {
     private $error = array();
 
     public function index() {
-        $this->load->language('extension/shipping/pickup');
+        $data = $this->load->language('extension/shipping/pickup');
 
         $this->document->setTitle($this->language->get('heading_title'));
 
@@ -18,19 +18,6 @@ class ControllerExtensionShippingPickup extends Controller {
         }
 
         $data['heading_title'] = $this->language->get('heading_title');
-
-        $data['text_edit'] = $this->language->get('text_edit');
-        $data['text_enabled'] = $this->language->get('text_enabled');
-        $data['text_disabled'] = $this->language->get('text_disabled');
-        $data['text_all_zones'] = $this->language->get('text_all_zones');
-        $data['text_none'] = $this->language->get('text_none');
-
-        $data['entry_geo_zone'] = $this->language->get('entry_geo_zone');
-        $data['entry_status'] = $this->language->get('entry_status');
-        $data['entry_sort_order'] = $this->language->get('entry_sort_order');
-
-        $data['button_save'] = $this->language->get('button_save');
-        $data['button_cancel'] = $this->language->get('button_cancel');
 
         if (isset($this->error['warning'])) {
             $data['error_warning'] = $this->error['warning'];
@@ -58,6 +45,12 @@ class ControllerExtensionShippingPickup extends Controller {
         $data['action'] = $this->url->link('extension/shipping/pickup', 'token=' . $this->session->data['token'], true);
 
         $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=shipping', true);
+
+        if (isset($this->request->post['pickup_name'])) {
+            $data['pickup_name'] = $this->request->post['pickup_name'];
+        } else {
+            $data['pickup_name'] = $this->config->get('pickup_name');
+        }
 
         if (isset($this->request->post['pickup_geo_zone_id'])) {
             $data['pickup_geo_zone_id'] = $this->request->post['pickup_geo_zone_id'];

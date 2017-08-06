@@ -5,22 +5,11 @@ $_['text_register'] = 'Register';
 $_['text_account_already'] = 'If you already have an account with us, please login at the <a href="%s">login page</a>.';
 $_['text_your_details'] = 'Your Personal Details';
 $_['text_your_address'] = 'Your Address';
-$_['text_newsletter'] = 'Newsletter';
+
 $_['text_your_password'] = 'Your Password';
 $_['text_agree'] = 'I have read and agree to the <a href="%s" class="agree"><b>%s</b></a>';
 $_['entry_customer_group'] = 'Customer Group';
-$_['entry_firstname'] = 'First Name';
-$_['entry_lastname'] = 'Last Name';
-$_['entry_email'] = 'E-Mail';
-$_['entry_telephone'] = 'Telephone';
-$_['entry_fax'] = 'Fax';
-$_['entry_company'] = 'Company';
-$_['entry_address_1'] = 'Address 1';
-$_['entry_address_2'] = 'Address 2';
-$_['entry_postcode'] = 'Post Code';
-$_['entry_city'] = 'City';
-$_['entry_country'] = 'Country';
-$_['entry_zone'] = 'Region / State';
+
 $_['entry_newsletter'] = 'Subscribe';
 $_['entry_password'] = 'Password';
 $_['entry_confirm'] = 'Password Confirm';

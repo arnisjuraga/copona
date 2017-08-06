@@ -2,9 +2,15 @@
 class ControllerExtensionModuleFeatured extends Controller {
 
     public function index($setting) {
-        $this->load->language('extension/module/featured');
+        //pr($setting);
+        $data = $this->load->language('extension/module/featured');
 
-        $data['heading_title'] = $this->language->get('heading_title');
+        //$this->config->get('config_language_id')
+        if (isset($setting['module_description'][$this->config->get('config_language_id')])) {
+            $data['heading_title'] = $setting['module_description'][$this->config->get('config_language_id')]['title'];
+        };
+        //pr($setting['module_description'][$this->config->get('config_language_id')]);
+        //$data['heading_title'] = $this->language->get('heading_title');
 
         $data['text_tax'] = $this->language->get('text_tax');
 
@@ -30,9 +36,9 @@ class ControllerExtensionModuleFeatured extends Controller {
 
                 if ($product_info) {
                     if ($product_info['image']) {
-                        $image = $this->model_tool_image->resize($product_info['image'], $setting['width'], $setting['height']);
+                        $image = $this->model_tool_image->{$this->config->get('theme_default_extension_module_featured')}($product_info['image'], $setting['width'], $setting['height']);
                     } else {
-                        $image = $this->model_tool_image->resize('placeholder.png', $setting['width'], $setting['height']);
+                        $image = $this->model_tool_image->{$this->config->get('theme_default_extension_module_featured')}('placeholder.png', $setting['width'], $setting['height']);
                     }
 
                     if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
@@ -75,7 +81,11 @@ class ControllerExtensionModuleFeatured extends Controller {
         }
 
         if ($data['products']) {
-            return $this->load->view('extension/module/featured', $data);
+            if(!empty($setting['content_data']) && $setting['content_data']){
+                return $data;
+            } else {
+                return $this->load->view('extension/module/featured', $data);
+            }
         }
     }
 

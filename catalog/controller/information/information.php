@@ -22,11 +22,16 @@ class ControllerInformationInformation extends Controller {
         $information_info = $this->model_catalog_information->getInformation($information_id);
 
         if ($information_info) {
+
+            if (isset($information_info['external_link']) && $information_info['external_link']) {
+                $this->response->redirect( $this->url->externalLink( $information_info['external_link']) );
+            }
+
             $this->document->setTitle($information_info['meta_title']);
             $this->document->setDescription($information_info['meta_description']);
             $this->document->setKeywords($information_info['meta_keyword']);
-            $this->document->addScript('catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js');
-            $this->document->addStyle('catalog/view/javascript/jquery/magnific/magnific-popup.css');
+            $this->document->addScript('assets/vendor/magnific/jquery.magnific-popup.min.js');
+            $this->document->addStyle('assets/vendor/magnific/magnific-popup.css');
 
             $data['breadcrumbs'][] = array(
                 'text' => $information_info['title'],

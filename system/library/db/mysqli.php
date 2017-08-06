@@ -9,7 +9,7 @@ final class MySQLi {
         $this->connection = new \mysqli($hostname, $username, $password, $database, $port);
 
         if ($this->connection->connect_error) {
-            throw new \Exception('Error: ' . $this->connection->error . '<br />Error No: ' . $this->connection->errno);
+            throw new \Exception('Error: ' . $this->connection->error . ' - Error No: ' . $this->connection->errno);
         }
 
         $this->connection->set_charset("utf8");
@@ -17,7 +17,31 @@ final class MySQLi {
     }
 
     public function query($sql) {
-        $query = $this->connection->query($sql);
+
+        if(defined('MODE') && (MODE == 'debug')) {
+            $start_time = microtime(true);
+
+            $query = $this->connection->query($sql);
+
+            $msec = number_format(microtime(true) - $start_time, 4, '.', ',') . " msec";
+
+            $output = date("Y-m-d h:i:s"). " \t";
+            $output .= $msec . " \t";
+            $output .= $sql . " \n";
+
+            if (!file_exists(DIR_LOGS . 'mysql_queries.txt')) {
+                touch(DIR_LOGS . 'mysql_queries.txt');
+            }
+
+            $file = fopen(DIR_LOGS . 'mysql_queries.txt', 'a');
+
+            fwrite($file, $output);
+
+            fclose($file);
+
+        } else {
+            $query = $this->connection->query($sql);
+        }
 
         if (!$this->connection->errno) {
             if ($query instanceof \mysqli_result) {

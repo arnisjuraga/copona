@@ -19,8 +19,8 @@ class ControllerCatalogProduct extends Controller {
 
         $this->load->model('catalog/product');
 
-
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+
             $product_id = $this->model_catalog_product->addProduct($this->request->post);
 
             $this->session->data['success'] = $this->language->get('text_success');
@@ -75,7 +75,9 @@ class ControllerCatalogProduct extends Controller {
 
         $this->load->model('catalog/product');
 
+
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+            //prd($this->request->post);
             //prd($this->request->post);
             $product_id = $this->request->get['product_id'];
 
@@ -652,7 +654,7 @@ class ControllerCatalogProduct extends Controller {
         }
 
         $filter = array();
-        // Ja ir izveidota produktu grupa
+        // If product group exists
         if (isset($product_info['product_group_id']) && $product_info['product_group_id']) {
             $filter['product_group_id'] = $product_info['product_group_id'];
             $data['product_group_id'] = $product_info['product_group_id'];
@@ -662,6 +664,7 @@ class ControllerCatalogProduct extends Controller {
 
         $data['product_group_products'] = array();
 
+        $data['custom_fields'] = $this->getCustomFields();
 
         // add self as "grouped" - you cannot choose product as group to itself
         $data['group_products'] = "," . (isset($this->request->get['product_id']) ? (int)$this->request->get['product_id'] : "") . ",";
@@ -834,7 +837,7 @@ class ControllerCatalogProduct extends Controller {
         } elseif (!empty($product_info)) {
             $data['tax_class_id'] = $product_info['tax_class_id'];
         } else {
-            $data['tax_class_id'] = 0;
+            $data['tax_class_id'] = $this->config->get('config_tax_class_id');
         }
 
         if (isset($this->request->post['date_available'])) {
@@ -995,6 +998,7 @@ class ControllerCatalogProduct extends Controller {
         } else {
             $categories = array();
         }
+
 
         $data['product_categories'] = array();
 
@@ -1157,6 +1161,14 @@ class ControllerCatalogProduct extends Controller {
             );
         }
 
+        // Content meta
+
+        if (!empty($product_info)) {
+            $data['content_meta'] = $this->model_catalog_product->getContentMeta($this->request->get['product_id']);
+        } else {
+            $data['content_meta'] = '';
+        }
+
         // Image
         if (isset($this->request->post['image'])) {
             $data['image'] = $this->request->post['image'];
@@ -1199,9 +1211,10 @@ class ControllerCatalogProduct extends Controller {
             }
 
             $data['product_images'][] = array(
-                'image'      => $image,
-                'thumb'      => $this->model_tool_image->resize($thumb, 100, 100),
-                'sort_order' => $product_image['sort_order']
+                'image'       => $image,
+                'thumb'       => $this->model_tool_image->resize($thumb, 100, 100),
+                'sort_order'  => $product_image['sort_order'],
+                'description' => $product_image['description']
             );
         }
 
@@ -1294,6 +1307,9 @@ class ControllerCatalogProduct extends Controller {
         } else {
             $data['product_layout'] = array();
         }
+
+        $this->load->model('localisation/tax_rate');
+        $data['tax_rates'] = $this->model_localisation_tax_rate->getTaxRates();
 
         $this->load->model('design/layout');
 
@@ -1458,5 +1474,32 @@ class ControllerCatalogProduct extends Controller {
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
     }
+
+
+    protected function getCustomFields() {
+
+        $data = $this->load->language('catalog/product');
+        $data['product_id'] = !isset($this->request->get['product_id']) ? 0 : (int)$this->request->get['product_id'];
+        $data['token'] = $this->session->data['token'];
+
+        $this->load->model('localisation/language');
+        $data['languages'] = $this->model_localisation_language->getLanguages();
+
+        if (isset($this->request->post['product_description'])) {
+            $data['product_description'] = $this->request->post['product_description'];
+        } elseif (isset($this->request->get['product_id'])) {
+            $data['product_description'] = $this->model_catalog_product->getProductDescriptions($this->request->get['product_id']);
+        } else {
+            $data['product_description'] = array();
+        }
+
+        // Content meta
+        $data['content_meta'] = $this->model_catalog_product->getContentMeta($this->request->get['product_id']);
+
+        return $this->load->view('catalog/product_form_custom_fields', $data);
+    }
+
+
+
 
 }

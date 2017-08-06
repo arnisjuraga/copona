@@ -5,7 +5,14 @@ class ControllerCommonHeader extends Controller {
         // Analytics
         $this->load->model('extension/extension');
 
+        $data = array_merge(array(), $this->load->language('common/header'));
+
         $data['analytics'] = array();
+        /* Theme upgrade additional start */
+        $data['language_id'] = $this->config->get('config_language_id');
+        $data['text_menu_brands'] = '';
+
+        /* Theme upgrade additional end */
 
         $analytics = $this->model_extension_extension->getExtensions('analytics');
 
@@ -49,8 +56,6 @@ class ControllerCommonHeader extends Controller {
             $data['logo'] = '';
         }
 
-        $this->load->language('common/header');
-
         $data['text_home'] = $this->language->get('text_home');
 
         // Wishlist
@@ -62,19 +67,7 @@ class ControllerCommonHeader extends Controller {
             $data['text_wishlist'] = sprintf($this->language->get('text_wishlist'), (isset($this->session->data['wishlist']) ? count($this->session->data['wishlist']) : 0));
         }
 
-        $data['text_shopping_cart'] = $this->language->get('text_shopping_cart');
         $data['text_logged'] = sprintf($this->language->get('text_logged'), $this->url->link('account/account', '', true), $this->customer->getFirstName(), $this->url->link('account/logout', '', true));
-
-        $data['text_account'] = $this->language->get('text_account');
-        $data['text_register'] = $this->language->get('text_register');
-        $data['text_login'] = $this->language->get('text_login');
-        $data['text_order'] = $this->language->get('text_order');
-        $data['text_transaction'] = $this->language->get('text_transaction');
-        $data['text_download'] = $this->language->get('text_download');
-        $data['text_logout'] = $this->language->get('text_logout');
-        $data['text_checkout'] = $this->language->get('text_checkout');
-        $data['text_category'] = $this->language->get('text_category');
-        $data['text_all'] = $this->language->get('text_all');
 
         $data['home'] = $this->url->link('common/home');
         $data['wishlist'] = $this->url->link('account/wishlist', '', true);
@@ -91,6 +84,10 @@ class ControllerCommonHeader extends Controller {
         $data['contact'] = $this->url->link('information/contact');
         $data['telephone'] = $this->config->get('config_telephone');
         $data['product_catalog'] = $this->url->link('product/category', '', true);
+
+        $data['cms_hide_top_eshop_links'] = $this->config->get('cms_hide_top_eshop_links');
+        $data['cms_hide_top_search'] = $this->config->get('cms_hide_top_search');
+        $data['cms_hide_top_cart'] = $this->config->get('cms_hide_top_cart');
 
         // Menu
         $this->load->model('catalog/category');
@@ -139,8 +136,8 @@ class ControllerCommonHeader extends Controller {
             $data['informations'][] = array(
                 'information_id' => $information['information_id'],
                 'title'          => $information['title'],
-                'href'           => $this->url->link('information/information', 'information_id=' . $information['information_id'])
-            );
+                'href'           => ($information['external_link'] ? $this->url->externalLink($information['external_link']) : $this->url->link('information/information', 'information_id=' . $information['information_id'])
+                ) );
         }
 
         $data['language'] = $this->load->controller('common/language');

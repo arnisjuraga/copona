@@ -2,11 +2,7 @@
 class ControllerAccountDownload extends Controller {
 
     public function index() {
-        if (!$this->customer->isLogged()) {
-            $this->session->data['redirect'] = $this->url->link('account/download', '', true);
-
-            $this->response->redirect($this->url->link('account/login', '', true));
-        }
+        $this->checkCustomerLogin('account/download');
 
         $this->load->language('account/download');
 
@@ -144,7 +140,7 @@ class ControllerAccountDownload extends Controller {
                         ob_end_clean();
                     }
 
-                    readfile($file, 'rb');
+                    readfile($file);
 
                     exit();
                 } else {

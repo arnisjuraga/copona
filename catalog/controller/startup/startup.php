@@ -1,7 +1,10 @@
 <?php
-class ControllerStartupStartup extends Controller {
 
-    public function index() {
+class ControllerStartupStartup extends Controller
+{
+
+    public function index()
+    {
         // Store
         if ($this->request->server['HTTPS']) {
             $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "store WHERE REPLACE(`ssl`, 'www.', '') = '" . $this->db->escape('https://' . str_replace('www.', '', $_SERVER['HTTP_HOST']) . rtrim(dirname($_SERVER['PHP_SELF']), '/.\\') . '/') . "'");
@@ -33,6 +36,9 @@ class ControllerStartupStartup extends Controller {
             }
         }
 
+        $this->config->set('theme_name', !empty($this->config->get('theme_default_directory')) ? $this->config->get('theme_default_directory') : 'default');
+        $this->config->set('theme_uri', DIR_TEMPLATE . $this->config->get('theme_name'));
+
         // Language
         $code = '';
 
@@ -40,10 +46,6 @@ class ControllerStartupStartup extends Controller {
 
         $languages = $this->model_localisation_language->getLanguages();
 
-        /* seo language OC23 start */
-        foreach ($languages as $result) {
-            $languages[$result['code']] = $result;
-        }
         if (isset($this->request->get["_route_"])) { // seo_language define
             $seo_path = explode('/', $this->request->get["_route_"]);
             if (array_key_exists($seo_path[0], $languages)) {
@@ -51,7 +53,7 @@ class ControllerStartupStartup extends Controller {
                 $seo_language = true;
                 //remove first element! And shift!
                 array_shift($seo_path);
-                if ($seo_path[0] == 'index.php') {
+                if (!empty($seo_path[0]) && $seo_path[0] == 'index.php') {
                     array_shift($seo_path);
                 }
                 if (empty($seo_path)) {
@@ -60,54 +62,69 @@ class ControllerStartupStartup extends Controller {
                     $this->request->get["_route_"] = implode($seo_path, '/');
                 }
             }
-        } else
-        // Set default language for domain without language link
-        if (empty($seo_language)) {
-            // TODO: must be fixed, otherwise Ajax has problems if nex line is enabled
-            // $session->data['language'] = $code = $config->get('config_language');
-        }
-        /* seo language OC23 end */
+        } else {
 
-        if (isset($this->session->data['language'])) {
-            $code = $this->session->data['language'];
-        }
+            // Set default language for domain without language link
+            if (empty($seo_language)) {
+                // TODO: must be fixed, otherwise Ajax has problems if nex line is enabled
+                // $session->data['language'] = $code = $config->get('config_language');
+            }
+            /* seo language OC23 end */
 
-        if (isset($this->request->cookie['language']) && !array_key_exists($code, $languages)) {
-            $code = $this->request->cookie['language'];
-        }
+            if (isset($this->session->data['language'])) {
+                $code = $this->session->data['language'];
+            }
 
-        // Language Detection
-        if (!empty($this->request->server['HTTP_ACCEPT_LANGUAGE']) && !array_key_exists($code, $languages)) {
-            $detect = '';
+            if (isset($this->request->cookie['language']) && !array_key_exists($code, $languages)) {
+                $code = $this->request->cookie['language'];
+            }
 
-            $browser_languages = explode(',', $this->request->server['HTTP_ACCEPT_LANGUAGE']);
+            $default_language = $this->config->get('config_language');
 
-            // Try using local to detect the language
-            foreach ($browser_languages as $browser_language) {
-                foreach ($languages as $key => $value) {
-                    if ($value['status']) {
-                        $locale = explode(',', $value['locale']);
+            // Language Detection
+            if (!empty($this->request->server['HTTP_ACCEPT_LANGUAGE']) && !array_key_exists($code, $languages)) {
+                $detect = '';
 
-                        if (in_array($browser_language, $locale)) {
-                            $detect = $key;
-                            break 2;
+                // lets use Default language, if it's accepted by Customer Browser correctly.
+                // $browser_languages = explode(',', $this->request->server['HTTP_ACCEPT_LANGUAGE']);
+                $browser_languages = explode(",", $this->request->server['HTTP_ACCEPT_LANGUAGE']);
+                for ($i = 0; $i < count($browser_languages); $i++) {
+                    $browser_languages[$i] = substr($browser_languages[$i], 0, 2);
+                }
+
+                if (in_array($default_language, $browser_languages)) {
+                    $detect = $default_language;
+                }
+
+                if (!$detect) {
+                    // Try using local to detect the language
+                    foreach ($browser_languages as $browser_language) {
+                        foreach ($languages as $key => $value) {
+                            if ($value['status']) {
+                                $locale = explode(',', $value['locale']);
+
+                                if (in_array($browser_language, $locale)) {
+                                    $detect = $key;
+                                    break 2;
+                                }
+                            }
                         }
                     }
                 }
-            }
 
-            if (!$detect) {
-                // Try using language folder to detect the language
-                foreach ($browser_languages as $browser_language) {
-                    if (array_key_exists(strtolower($browser_language), $languages)) {
-                        $detect = strtolower($browser_language);
+                if (!$detect) {
+                    // Try using language folder to detect the language
+                    foreach ($browser_languages as $browser_language) {
+                        if (array_key_exists(strtolower($browser_language), $languages)) {
+                            $detect = strtolower($browser_language);
 
-                        break;
+                            break;
+                        }
                     }
                 }
-            }
 
-            $code = $detect ? $detect : '';
+                $code = $detect ? $detect : '';
+            }
         }
 
         if (!array_key_exists($code, $languages)) {
@@ -130,6 +147,16 @@ class ControllerStartupStartup extends Controller {
 
         // Set the config language_id
         $this->config->set('config_language_id', $languages[$code]['language_id']);
+
+        // Default theme 'default' functions.php settings.
+        if (file_exists(DIR_TEMPLATE . 'default/functions.php')) {
+            require_once(DIR_TEMPLATE . 'default/functions.php');
+        }
+
+        //Theme settings override
+        if ($this->config->get('theme_name') != 'default' && file_exists($this->config->get('theme_uri') . '/functions.php')) {
+            require_once($this->config->get('theme_uri') . '/functions.php');
+        }
 
         // Customer
         $customer = new Cart\Customer($this->registry);
@@ -215,9 +242,5 @@ class ControllerStartupStartup extends Controller {
 
         // Encryption
         $this->registry->set('encryption', new Encryption($this->config->get('config_encryption')));
-
-        // OpenBay Pro
-        $this->registry->set('openbay', new Openbay($this->registry));
     }
-
 }

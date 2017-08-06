@@ -3,6 +3,8 @@
   <div class="page-header">
     <div class="container-fluid">
       <div class="pull-right">
+        <button onclick="saveAndContinue(event);" form="form-product" data-toggle="tooltip" title="<?php echo $button_save_continue; ?>"
+                class="btn btn-primary savecontinue"><i class="fa fa-save"></i><?= $button_save_continue ?></button>
         <button type="submit" id="button-save" form="form-setting" data-toggle="tooltip" title="<?php echo $button_save; ?>" disabled="disabled" class="btn btn-primary"><i class="fa fa-save"></i></button>
         <a href="<?php echo $cancel; ?>" data-toggle="tooltip" title="<?php echo $button_cancel; ?>" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
       <h1><?php echo $heading_title; ?></h1>
@@ -302,6 +304,22 @@
                   </select>
                 </div>
               </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-default-tax-class"><?php echo $entry_tax_class; ?></label>
+                <div class="col-sm-10">
+                  <select name="config_tax_class_id" id="input-default-tax-class" class="form-control">
+                    <option value="0"><?php echo $text_none; ?></option>
+                    <?php foreach ($tax_classes as $tax_class) { ?>
+                        <?php if ($tax_class['tax_class_id'] == $config_tax_class_id) { ?>
+                            <option value="<?php echo $tax_class['tax_class_id']; ?>" selected="selected"><?php echo $tax_class['title']; ?></option>
+                        <?php } else { ?>
+                            <option value="<?php echo $tax_class['tax_class_id']; ?>"><?php echo $tax_class['title']; ?></option>
+                        <?php } ?>
+                    <?php } ?>
+                  </select>
+                </div>
+              </div>
             </div>
             <div class="tab-pane" id="tab-option">
               <fieldset>
@@ -337,6 +355,24 @@
                         <div class="text-danger"><?php echo $error_limit_admin; ?></div>
                     <?php } ?>
                   </div>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend><?php echo $text_part_numbers; ?></legend>
+                <div class="form-group">
+                    <?php foreach ($partnumbers as $partnumber) { ?>
+                      <label class="col-sm-2 control-label"><span data-toggle="tooltip" title="<?php echo ${'help_' . $partnumber}; ?>"><?php echo ${'entry_' . $partnumber}; ?></span></label>
+                      <div class="col-sm-10">
+                        <label class="radio-inline">
+                          <input type="radio" name="config_use_<?= $partnumber ?>" value="1" <?= ${'config_use_' . $partnumber} ? 'checked="checked"' : '' ?> />
+                          <?php echo $text_yes; ?>
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="config_use_<?= $partnumber ?>" value="0" <?= !${'config_use_' . $partnumber} ? 'checked="checked"' : '' ?> />
+                          <?php echo $text_no; ?>
+                        </label>
+                      </div>
+                  <?php } ?>
                 </div>
               </fieldset>
               <fieldset>
@@ -1160,7 +1196,7 @@
                 <div class="form-group">
                   <label class="col-sm-2 control-label" for="input-mail-alert-email"><span data-toggle="tooltip" title="<?php echo $help_mail_alert_email; ?>"><?php echo $entry_mail_alert_email; ?></span></label>
                   <div class="col-sm-10">
-                    <textarea name="config_mail_alert_email" rows="5" placeholder="<?php echo $entry_mail_alert_email; ?>" id="input-alert-email" class="form-control"><?php echo $config_alert_email; ?></textarea>
+                    <textarea name="config_mail_alert_email" rows="5" placeholder="<?php echo $entry_mail_alert_email; ?>" id="input-alert-email" class="form-control"><?php echo $config_mail_alert_email; ?></textarea>
                   </div>
                 </div>
               </fieldset>

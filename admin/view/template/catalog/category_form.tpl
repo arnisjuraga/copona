@@ -153,8 +153,12 @@
                 <label class="col-sm-2 control-label" for="input-keyword"><span data-toggle="tooltip" title="<?php echo $help_keyword; ?>"><?php echo $entry_multi_seo_keyword; ?></span></label>
                 <div class="col-sm-3">
                     <?php foreach ($languages as $language) { ?>
-                      <img src="language/<?php echo $language['directory']; ?>/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" />
-                      <input type="text" name="seo_keyword[<?= $language['language_id'] ?>]" value="<?php echo (isset($seo_keywords[$language['language_id']]) ? $seo_keywords[$language['language_id']] : "" ) ?>" placeholder="<?php echo $entry_multi_seo_keyword; ?>" id="input-multi-seo-keyword" class="form-control" />
+                      <div class="input-group">
+                        <span class="input-group-addon lng-image">
+                          <img src="<?= HTTP_CATALOG ?>catalog/language/<?php echo $language['directory']; ?>/<?php echo $language['directory']; ?>.png" title="<?php echo $language['name']; ?>" />
+                        </span>
+                        <input type="text" name="seo_keyword[<?= $language['language_id'] ?>]" value="<?php echo (isset($seo_keywords[$language['language_id']]) ? $seo_keywords[$language['language_id']] : "" ) ?>" placeholder="<?php echo $entry_multi_seo_keyword; ?>" id="input-multi-seo-keyword" class="form-control" />
+                      </div>
                   <?php } ?>
                 </div>
               </div>
@@ -258,6 +262,11 @@
             </div>
           </div>
         </form>
+        <div class="pull-right">
+          <button onclick="saveAndContinue(event);" form="form-category" data-toggle="tooltip" title="<?php echo $button_save_continue; ?>"
+                  class="btn btn-primary"><i class="fa fa-save"></i><?= $button_save_continue ?></button>
+          <button type="submit" form="form-category" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="btn btn-primary"><i class="fa fa-save"></i></button>
+          <a href="<?php echo $cancel; ?>" data-toggle="tooltip" title="<?php echo $button_cancel; ?>" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
       </div>
     </div>
   </div>
